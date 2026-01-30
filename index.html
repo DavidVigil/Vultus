@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mask Painter - Progresivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="backgroundContainer">
+        <img id="backgroundImage1" class="background-layer active" src="assets/textures/backgroundPaint.jpg" alt="">
+        <img id="backgroundImage2" class="background-layer" src="assets/textures/backgroundMove.jpg" alt="">
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="ui">
+        <div id="maskToggle" title="Cambiar Máscara">🎭</div>
+
+        <div id="maskSelector">
+            <div class="selector-title">Seleccionar Máscara</div>
+            <div class="mask-list" id="maskListContainer">
+                </div>
+        </div>
+
+        <div id="paletteToggle" title="Abrir/Cerrar Paleta">🎨</div>
+        
+        <div id="colorPalette">
+            <div class="color-indicator">Color del Pincel</div>
+            <div class="color-picker-wrapper">
+                <input type="color" id="colorPicker" value="#ff0000">
+            </div>
+            
+            <div id="brushSizeControl">
+                <label>Tamaño: <span id="brushSizeValue">25</span></label>
+                <input type="range" id="brushSizeSlider" min="5" max="80" value="25" step="1">
+            </div>
+        </div>
+    </div>
+
+    <div id="topRightActions">
+        <div id="galleryButton" title="Ver Galería">🖼️ Galería</div>
+        <div id="saveButton" title="Guardar Diseño">💾 Guardar</div>
+    </div>
+
+    <div id="paintMode">Modo: Pintar 🎨</div>
+    
+    <div id="lightToggle" title="Cambiar dirección de luz">💡</div>
+    <div id="musicToggle" title="Silenciar/Activar música">🔊</div>
+    
+    <div id="undoButton" title="Deshacer (Ctrl+Z)" class="disabled">↶</div>
+    <div id="redoButton" title="Rehacer (Ctrl+Y)" class="disabled">↷</div>
+    <div id="clearButton" title="Limpiar Máscara">🗑️</div>
+    
+    <div id="instructions">
+        Clic Izquierdo: Pintar/Rotar | Clic Derecho: Desplazar | Espacio: Cambiar Modo
+    </div>
+
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <h2>Guardar Obra Maestra</h2>
+            <p>Guarda tu diseño para desbloquear la siguiente máscara.</p>
+            <input type="text" id="designName" placeholder="Nombre de la obra" maxlength="20">
+            <textarea id="designDesc" placeholder="Breve descripción..." maxlength="50"></textarea>
+            <div class="modal-buttons">
+                <button id="cancelSave">Cancelar</button>
+                <button id="confirmSave" class="primary-btn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="galleryModal" class="modal">
+        <div class="modal-content gallery-content">
+            <span class="close-modal" id="closeGallery">&times;</span>
+            <h2>Galería de Diseños</h2>
+            <div id="galleryGrid" class="gallery-grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="toast">✅ Diseño guardado exitosamente</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

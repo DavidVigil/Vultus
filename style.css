@@ -1,0 +1,268 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+
+#backgroundContainer {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1; overflow: hidden;
+}
+
+.background-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out;
+}
+.background-layer.active { opacity: 1; }
+
+#gameCanvas {
+    display: block; width: 100vw; height: 100vh;
+    /* CAMBIO: Inicia en crosshair porque el juego inicia en modo pintar */
+    cursor: crosshair; 
+    background: transparent;
+}
+
+/* UI Container principal */
+#ui {
+    position: absolute; top: 20px; left: 20px; z-index: 100;
+    display: flex; flex-direction: column; gap: 15px; max-width: 320px;
+}
+
+/* Botones Circulares */
+#paletteToggle, #maskToggle {
+    width: 60px; height: 60px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 28px; transition: all 0.3s; user-select: none; border: 3px solid white;
+}
+
+#paletteToggle { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+#paletteToggle.open { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+
+#maskToggle { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+#maskToggle.open { background: linear-gradient(135deg, #fecfef 0%, #ff9a9e 100%); }
+
+#paletteToggle:hover, #maskToggle:hover { transform: scale(1.1); }
+
+/* Paneles Desplegables */
+#colorPalette, #maskSelector {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px; border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    display: none; backdrop-filter: blur(10px); min-width: 200px;
+    animation: slideIn 0.3s ease-out;
+}
+#colorPalette.open, #maskSelector.open { display: block; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos de Color Picker */
+.color-picker-wrapper { display: flex; justify-content: center; margin-bottom: 20px; }
+#colorPicker { 
+    width: 60px; height: 60px; 
+    border: none; border-radius: 50%; 
+    cursor: pointer; 
+    padding: 0;
+    overflow: hidden;
+    background: none;
+}
+#colorPicker::-webkit-color-swatch-wrapper { padding: 0; }
+#colorPicker::-webkit-color-swatch { border: none; border-radius: 50%; border: 3px solid #ddd; }
+#colorPicker::-moz-color-swatch { border: none; border-radius: 50%; border: 3px solid #ddd; }
+
+#brushSizeControl { background: rgba(240,240,240,0.5); padding: 15px; border-radius: 10px; }
+#brushSizeSlider { width: 100%; cursor: pointer; }
+
+/* Lista de Máscaras */
+.mask-list { 
+    display: flex; flex-direction: column; gap: 10px; 
+    max-height: 50vh; overflow-y: auto; padding-right: 5px; 
+}
+.mask-list::-webkit-scrollbar { width: 6px; }
+.mask-list::-webkit-scrollbar-track { background: transparent; }
+.mask-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.mask-item {
+    border-radius: 10px; overflow: hidden; cursor: pointer;
+    border: 3px solid transparent; transition: all 0.2s; position: relative;
+    flex-shrink: 0;
+}
+.mask-item img { width: 100%; display: block; }
+.mask-item.selected { border-color: #667eea; box-shadow: 0 0 10px rgba(102,126,234,0.5); }
+
+.mask-item.locked {
+    filter: grayscale(100%); opacity: 0.6; cursor: not-allowed;
+}
+.mask-item.locked::after {
+    content: '🔒'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); font-size: 30px;
+}
+
+/* Botones Superiores */
+#topRightActions {
+    position: absolute; top: 20px; right: 20px;
+    display: flex; gap: 10px; z-index: 100;
+}
+#galleryButton, #saveButton {
+    background: white; padding: 10px 20px; border-radius: 20px;
+    font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+#galleryButton:hover, #saveButton:hover { transform: scale(1.05); }
+#saveButton { background: #667eea; color: white; }
+
+/* Indicadores y Botones Inferiores */
+#paintMode {
+    position: absolute; top: 80px; right: 20px;
+    background: rgba(255,255,255,0.9); padding: 10px 15px;
+    border-radius: 10px; font-weight: bold; color: #667eea;
+}
+
+#musicToggle, #lightToggle, #undoButton, #redoButton, #clearButton {
+    position: absolute; bottom: 20px;
+    background: rgba(255,255,255,0.9); padding: 12px 18px;
+    border-radius: 10px; cursor: pointer; font-size: 24px;
+    transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); user-select: none;
+}
+#musicToggle { right: 20px; }
+#lightToggle { right: 90px; }
+
+/* Grupo Izquierda */
+#undoButton { left: 20px; }
+#redoButton { left: 90px; } 
+#clearButton { left: 160px; } 
+
+#undoButton.disabled, #redoButton.disabled { opacity: 0.3; cursor: not-allowed; }
+
+#instructions {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.9); padding: 10px 20px; border-radius: 10px;
+    text-align: center; font-size: 14px; color: #333; pointer-events: none;
+    /* CAMBIO: Se eliminó el width: 80% para evitar superposiciones */
+}
+
+/* MODALES */
+.modal {
+    display: none; position: fixed; z-index: 200; left: 0; top: 0;
+    width: 100%; height: 100%; background-color: rgba(0,0,0,0.7);
+    justify-content: center; align-items: center;
+}
+.modal.open { display: flex; animation: fadeIn 0.3s; }
+.modal-content {
+    background-color: white; padding: 30px; border-radius: 15px;
+    width: 90%; max-width: 400px; text-align: center; position: relative;
+}
+@keyframes fadeIn { from {opacity:0} to {opacity:1} }
+
+.modal-content input, .modal-content textarea {
+    width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;
+}
+.modal-buttons { display: flex; justify-content: space-between; margin-top: 15px; }
+button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+.primary-btn { background: #667eea; color: white; }
+
+/* Galería Grid Ajustada */
+.gallery-content { 
+    max-width: 800px; 
+    max-height: 80vh; 
+    display: flex; 
+    flex-direction: column;
+}
+
+.gallery-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px; 
+    margin-top: 20px;
+    overflow-y: auto; 
+    padding: 10px; 
+    min-height: 100px;
+}
+
+.gallery-grid::-webkit-scrollbar { width: 8px; }
+.gallery-grid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.gallery-grid::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+#emptyGalleryMsg {
+    grid-column: 1 / -1; text-align: center; width: 100%;
+    color: #888; margin-top: 30px;
+}
+
+.gallery-item { 
+    border: 1px solid #ddd; padding: 5px; border-radius: 8px; position: relative;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.gallery-img-container {
+    width: 100%; height: 150px; overflow: hidden;
+    border-radius: 5px; background: #333;
+}
+.gallery-item img { 
+    width: 100%; height: 100%; object-fit: contain; 
+}
+.gallery-item h4 { font-size: 14px; margin: 5px 0 0; }
+
+.delete-card-btn {
+    position: absolute; top: -10px; right: -10px;
+    width: 30px; height: 30px;
+    background: #ff4444; color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-weight: bold; border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+    z-index: 10;
+}
+.delete-card-btn:hover { transform: scale(1.1); background: red; }
+
+/* Botón de Instagram/Compartir */
+.share-insta-btn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 6px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.share-insta-btn:hover { opacity: 0.9; }
+
+.close-modal {
+    position: absolute; top: 10px; right: 15px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 5;
+}
+
+/* Toast Notification */
+#toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 50px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s;
+}
+
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px; 
+}
