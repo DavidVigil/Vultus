@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vultus - Paint and Relax</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖌️</text></svg>">
     <link rel="stylesheet" href="style.css">
@@ -20,8 +20,7 @@
 
         <div id="maskSelector">
             <div class="selector-title">Seleccionar Máscara</div>
-            <div class="mask-list" id="maskListContainer">
-                </div>
+            <div class="mask-list" id="maskListContainer"></div>
         </div>
 
         <div id="paletteToggle" title="Abrir/Cerrar Paleta">🎨</div>
@@ -31,7 +30,6 @@
             <div class="color-picker-wrapper">
                 <input type="color" id="colorPicker" value="#ff0000">
             </div>
-            
             <div id="brushSizeControl">
                 <label>Tamaño: <span id="brushSizeValue">25</span></label>
                 <input type="range" id="brushSizeSlider" min="5" max="80" value="25" step="1">
@@ -44,17 +42,23 @@
         <div id="saveButton" title="Guardar Diseño">💾 Guardar</div>
     </div>
 
-    <div id="paintMode">Modo: Pintar 🎨</div>
-    
-    <div id="lightToggle" title="Cambiar dirección de luz">💡</div>
-    <div id="musicToggle" title="Silenciar/Activar música">🔊</div>
-    
-    <div id="undoButton" title="Deshacer (Ctrl+Z)" class="disabled">↶</div>
-    <div id="redoButton" title="Rehacer (Ctrl+Y)" class="disabled">↷</div>
-    <div id="clearButton" title="Limpiar Máscara">🗑️</div>
-    
-    <div id="instructions">
-        Clic Izquierdo: Pintar/Rotar | Clic Derecho: Desplazar | Espacio: Cambiar Modo
+    <div id="bottomBar">
+        <div class="controls-group left">
+            <div id="undoButton" title="Deshacer" class="control-btn disabled">↶</div>
+            <div id="redoButton" title="Rehacer" class="control-btn disabled">↷</div>
+            <div id="clearButton" title="Limpiar" class="control-btn">🗑️</div>
+        </div>
+
+        <div id="instructions-container">
+            <span class="desktop-text">Clic Izq: Pintar/Rotar | Clic Der: Mover | Espacio: Cambiar Modo</span>
+            <span class="mobile-text">1 dedo: Pintar/Rotar | 2 dedos: Mover/Zoom | Botón 🔄: Cambiar Modo</span>
+        </div>
+
+        <div class="controls-group right">
+            <div id="mobileModeToggle" title="Cambiar Modo" class="control-btn mobile-only">🔄</div>
+            <div id="lightToggle" title="Luz" class="control-btn">💡</div>
+            <div id="musicToggle" title="Música" class="control-btn">🔊</div>
+        </div>
     </div>
 
     <div id="saveModal" class="modal">
@@ -74,12 +78,11 @@
         <div class="modal-content gallery-content">
             <span class="close-modal" id="closeGallery">&times;</span>
             <h2>Galería de Diseños</h2>
-            <div id="galleryGrid" class="gallery-grid">
-                </div>
+            <div id="galleryGrid" class="gallery-grid"></div>
         </div>
     </div>
 
-    <div id="toast">✅ Diseño guardado exitosamente</div>
+    <div id="toast">Diseño guardado exitosamente</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
